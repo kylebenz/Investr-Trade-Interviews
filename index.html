@@ -4,9 +4,16 @@
   ------------------------------------------------------------
   Single self-contained page. No build step, no backend.
 
-  EMAIL DELIVERY (FormSubmit, formsubmit.co)
-  - Applications are POSTed as JSON to CONFIG.FORM_ENDPOINT (near the top of the <script>).
-  - IMPORTANT: the very first submission to a new FormSubmit address triggers a one-time
+  EMAIL DELIVERY
+  1) Primary: Netlify Function at CONFIG.SUBMIT_ENDPOINT (/api/submit-application).
+     It sends each application from your Gmail account to your inbox: full answers in the
+     email body plus a formatted PDF attachment. Needs GMAIL_USER and GMAIL_APP_PASSWORD set
+     in Netlify (see README.md and netlify/functions/submit-application.mjs).
+  2) Fallback: FormSubmit (formsubmit.co) at CONFIG.FORM_ENDPOINT. Used only when the Netlify
+     Function is missing, not configured, or cannot send (e.g. the page is opened as a local
+     file). This email has the full answers as a table but no PDF.
+  - Applications are POSTed as JSON with fetch(), so the candidate stays on the page.
+  - IMPORTANT (FormSubmit fallback only): the very first submission to a new FormSubmit address triggers a one-time
     ACTIVATION EMAIL sent to that inbox. Nothing is delivered until you click "Activate Form"
     in that email. Send one test application yourself after deploying, confirm the activation,
     then send another test to check it arrives.
@@ -510,7 +517,12 @@
    applications start arriving. Afterwards you can replace the address
    with FormSubmit's random-string alias to hide it from the page source.
 ------------------------------------------------------------------- */
-const CONFIG = { FORM_ENDPOINT: "https://formsubmit.co/ajax/kylebenzduhilag0@gmail.com" };
+const CONFIG = {
+  // Netlify Function (Gmail, text email + PDF). Set to "" to use FormSubmit only.
+  SUBMIT_ENDPOINT: "/api/submit-application",
+  // FormSubmit fallback. Set to "" to disable the fallback.
+  FORM_ENDPOINT: "https://formsubmit.co/ajax/kylebenzduhilag0@gmail.com"
+};
 
 (function () {
   'use strict';
@@ -1228,22 +1240,75 @@ const CONFIG = { FORM_ENDPOINT: "https://formsubmit.co/ajax/kylebenzduhilag0@gma
   });
 
   /* ---------- Submit ---------- */
-  function buildPayload() {
+  // Every visible field, grouped by step, in form order. Shared by both delivery routes.
+  function buildSections() {
+    return STEPS.map((s, i) => ({
+      title: i === LAST ? 'Confirmations' : (i + 1) + '. ' + s.short,
+      fields: s.fields.filter(isVisible).map((f) => {
+        const o = { label: f.key, value: displayValue(f, state.data[f.id]) };
+        if (f.question) o.question = f.question;
+        return o;
+      })
+    }));
+  }
+
+  // Payload for the Netlify Function
+  function buildNetlifyPayload() {
+    return { _honey: $('#hp-field').value, sections: buildSections() };
+  }
+
+  // Payload for FormSubmit: flat, readable keys in form order
+  function buildFormSubmitPayload() {
     const d = state.data;
-    const name = String(d.fullName || '').trim();
     const payload = {
-      _subject: 'New Closer Application: ' + name,
+      _subject: 'New Closer Application: ' + String(d.fullName || '').trim(),
       _template: 'table',
       _captcha: 'false',
       _replyto: String(d.email || '').trim(),
       _honey: $('#hp-field').value
     };
-    ALL_FIELDS.forEach((f) => {
-      if (!isVisible(f)) return;
-      payload[f.key] = displayValue(f, d[f.id]);
-    });
+    buildSections().forEach((s) => s.fields.forEach((f) => { payload[f.label] = f.value; }));
     payload['Submitted At (UTC)'] = new Date().toISOString().replace('T', ' ').slice(0, 16);
     return payload;
+  }
+
+  async function postJSON(url, body, timeoutMs) {
+    const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    const timer = setTimeout(() => { if (ctrl) ctrl.abort(); }, timeoutMs);
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(body),
+        signal: ctrl ? ctrl.signal : undefined
+      });
+      let json = {};
+      try { json = await res.json(); } catch (e) { /* non-JSON response */ }
+      return { status: res.status, ok: res.ok, json: json || {} };
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  // Try the Netlify Function first. Fall back to FormSubmit only when the function is
+  // unavailable or could not send, so an application is never silently lost.
+  async function deliver() {
+    if (CONFIG.SUBMIT_ENDPOINT) {
+      let r = null;
+      try { r = await postJSON(CONFIG.SUBMIT_ENDPOINT, buildNetlifyPayload(), 30000); } catch (e) { r = null; }
+      if (r && r.ok && r.json.ok === true) return;
+      // Problems the candidate can fix: show them instead of falling back.
+      if (r && [400, 413, 422, 429].indexOf(r.status) > -1) {
+        const err = new Error(r.json.error || 'The application could not be accepted.');
+        err.userFacing = true;
+        throw err;
+      }
+    }
+    if (!CONFIG.FORM_ENDPOINT) throw new Error('Email delivery is not available right now.');
+    const r2 = await postJSON(CONFIG.FORM_ENDPOINT, buildFormSubmitPayload(), 25000);
+    if (!(r2.ok && String(r2.json.success) === 'true')) {
+      throw new Error(r2.json.message ? r2.json.message : 'The server responded with status ' + r2.status + '.');
+    }
   }
 
   function setLoading(on) {
@@ -1287,28 +1352,15 @@ const CONFIG = { FORM_ENDPOINT: "https://formsubmit.co/ajax/kylebenzduhilag0@gma
     setAlert('');
     setLoading(true);
     $('#submit-status').textContent = 'Submitting your application.';
-    const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
-    const timer = setTimeout(() => { if (ctrl) ctrl.abort(); }, 25000);
     try {
-      const res = await fetch(CONFIG.FORM_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify(buildPayload()),
-        signal: ctrl ? ctrl.signal : undefined
-      });
-      let json = {};
-      try { json = await res.json(); } catch (e) { /* non-JSON response */ }
-      const ok = res.ok && String(json.success) === 'true';
-      if (!ok) throw new Error(json && json.message ? json.message : 'The server responded with status ' + res.status + '.');
-      clearTimeout(timer);
+      await deliver();
       showSuccess();
     } catch (err) {
-      clearTimeout(timer);
       setLoading(false);
       updateNav();
       const reason = err && err.name === 'AbortError' ? 'The request timed out.' : (err && err.message ? err.message : 'Network error.');
       $('#submit-status').textContent = 'Submission failed.';
-      setAlert('<strong>We could not send your application.</strong> ' + esc(reason) + ' Everything you entered is still here and saved on this device. Check your connection and try again.');
+      setAlert('<strong>We could not send your application.</strong> ' + esc(reason) + ' Everything you entered is still here and saved on this device. ' + (err && err.userFacing ? 'Fix the issue above and submit again.' : 'Check your connection and try again.'));
       save();
     }
   }

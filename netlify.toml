@@ -1,0 +1,19 @@
+# Netlify: the static page is copied into dist/ so package.json, node_modules and
+# the function source are never published as public files.
+[build]
+  command = "mkdir -p dist && cp index.html dist/index.html"
+  publish = "dist"
+  functions = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[functions]
+  node_bundler = "esbuild"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "DENY"

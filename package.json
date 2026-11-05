@@ -1,0 +1,13 @@
+{
+  "name": "investr-trades-closer-application",
+  "private": true,
+  "description": "Closer application page with a Netlify Function that emails each application (text + PDF) via Gmail.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "nodemailer": "10.3.1",
+    "pdf-lib": "1.17.1"
+  }
+}
