@@ -113,16 +113,13 @@
   .hero .cta{margin-top:36px}
   @media (min-width:768px){.hero{padding:112px 0 96px}}
 
-  .stats{list-style:none;margin:48px auto 0;padding:0;display:grid;grid-template-columns:1fr 1fr;max-width:920px;border:1px solid var(--border);border-radius:var(--radius);background:rgba(19,21,25,.7)}
-  .stats li{padding:22px 14px;text-align:center}
-  .stats li:nth-child(odd){border-right:1px solid var(--border)}
-  .stats li:nth-child(-n+2){border-bottom:1px solid var(--border)}
+  .stats{list-style:none;margin:48px auto 0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);max-width:720px;border:1px solid var(--border);border-radius:var(--radius);background:rgba(19,21,25,.7)}
+  .stats li{padding:20px 6px;text-align:center;border-right:1px solid var(--border)}
+  .stats li:last-child{border-right:0}
+  @media (max-width:420px){.stat-label{font-size:11px;letter-spacing:.12em}}
   .stat-value{display:block;font:700 clamp(1.4rem,4.6vw,1.9rem)/1.1 'Playfair Display',Georgia,serif;color:var(--heading)}
   .stat-label{display:block;margin-top:8px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted-text)}
   @media (min-width:768px){
-    .stats{grid-template-columns:repeat(4,1fr)}
-    .stats li{border-bottom:0!important;border-right:1px solid var(--border)}
-    .stats li:last-child{border-right:0}
     .stats li{padding:28px 16px}
   }
 
@@ -376,7 +373,6 @@
       <h1 id="hero-title" class="reveal">We're Hiring <span class="nowrap">High-Ticket</span> <em>Closers</em></h1>
       <p class="sub reveal">Commission-based closing roles for a 12-month options trading mentorship. We hire for judgment, not just volume.</p>
       <ul class="stats reveal" aria-label="Role at a glance">
-        <li><span class="stat-value">$5,700</span><span class="stat-label">Ticket</span></li>
         <li><span class="stat-value">Inbound</span><span class="stat-label">Booked calls</span></li>
         <li><span class="stat-value">US</span><span class="stat-label">Market hours</span></li>
         <li><span class="stat-value">Remote</span><span class="stat-label">Role</span></li>
@@ -705,8 +701,8 @@ const CONFIG = {
       short: 'Fit', title: 'Fit and <em>availability</em>',
       intro: 'Calls run during US market hours. Tell us how this role fits your week.',
       items: [
-        field({ id: 'marketHours', key: 'Can Work US Market Hours incl. 9:00–11:00 AM ET', label: 'Can you work US market hours, including 9:00–11:00 AM ET?', type: 'radio', options: opts(['Yes', 'No']) }),
-        field({ id: 'marketHoursDetails', key: 'Market Hours Details', label: 'Details', required: false, placeholder: 'Your usual hours in ET, and any days you are unavailable' }),
+        field({ id: 'marketHours', key: 'Can Work US Hours, 9:00 AM to 8:00 PM ET', label: 'Can you work US hours, 9:00 AM to 8:00 PM ET?', type: 'radio', options: opts(['Yes', 'No']) }),
+        field({ id: 'marketHoursDetails', key: 'Market Hours Details', label: 'Details', required: false, placeholder: 'Which hours in that window you can cover, and any days you are unavailable' }),
         field({ id: 'startDate', key: 'Earliest Start Date', label: 'Earliest start date', type: 'date' }),
         { row: [
           field({ id: 'compStructure', key: 'Expected Compensation Structure', label: 'Expected compensation structure', type: 'select', options: opts(['Commission only', 'Base plus commission', 'Open']) }),
