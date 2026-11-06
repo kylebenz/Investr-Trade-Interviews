@@ -28,7 +28,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Closer Application · Investr Trades</title>
-<meta name="description" content="Apply for a commission-based high-ticket closer role at Investr Trades Inc. Submit your track record, three Fathom recordings and a 12-question audio interview.">
+<meta name="description" content="Apply for a commission-based high-ticket closer role at Investr Trades Inc. Submit your track record, three Fathom recordings and a 5-question audio interview.">
 <meta name="theme-color" content="#0A0B0D">
 <meta name="color-scheme" content="dark">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -430,7 +430,7 @@
       <ol class="steps-list">
         <li class="card reveal"><span class="step-num" aria-hidden="true">01</span><h3>Profile</h3><p>Your background, sales track record and availability.</p></li>
         <li class="card reveal"><span class="step-num" aria-hidden="true">02</span><h3>Proof of closes</h3><p>Three Fathom recordings of deals you closed, with context on each.</p></li>
-        <li class="card reveal"><span class="step-num" aria-hidden="true">03</span><h3>Audio interview on Vocaroo</h3><p>Twelve real call scenarios, answered out loud in your own words.</p></li>
+        <li class="card reveal"><span class="step-num" aria-hidden="true">03</span><h3>Audio interview on Vocaroo</h3><p>Five real call scenarios, answered out loud in your own words.</p></li>
         <li class="card reveal"><span class="step-num" aria-hidden="true">04</span><h3>Review</h3><p>We review every submission within 5 business days.</p></li>
       </ol>
     </div>
@@ -566,16 +566,9 @@ const CONFIG = {
 
   /* ---------- Content ---------- */
   const QUESTIONS = [
-    `A prospect joins the call, skips the small talk and says: "I've watched the videos. Just tell me what it costs and what's included." Walk us through your first three minutes. Tell us the exact questions you would ask, in order, and what you are trying to learn from each one.`,
     `A prospect says: "I've been trading options for about five years. My problem is consistency." That word can mean a dozen different things. Give us the follow-up questions you would ask to find out what it actually means for this person and what it has cost them. Then explain how you would know when you have dug deep enough.`,
     `A prospect has traded for two months, is down about 20,000, and tells you his goal is 100,000 a month. Ten minutes in, he snaps: "I've told you I'm a beginner. Stop asking me questions and tell me what you've got." What do you do next, and why? Address both the goal and the irritation.`,
-    `A program manager at a tech company sells covered calls and has made about 7,000 this year. He likes the idea of trading at the open but says it would be "a nice extra," nothing more. Is there real urgency here? Explain your reasoning, and tell us how you would handle the rest of the call either way.`,
-    `Two prospects end their calls with "I need to talk to my wife first." Prospect A says they discussed the program before the call, she expected about 3,000, and he needs to move funds over the weekend anyway. Prospect B mentions that part of the trading account is his partner's money and that he hasn't really told her what he does with it. How would you tell which one is a stall and which is a real objection? What exactly would you ask each of them, and how would each call end?`,
-    `A prospect expected the program to cost around 3,600. You tell him 5,700. He says: "That's 20% of my 25,000 seed money." A minute later he adds, "Honestly, I don't know if I'm smart enough to execute this." Which of those is the real objection? What would you do next, and why?`,
-    `A prospect lost 100,000 to a stock-tip group that turned out to be a pump-and-dump scam. He wants to meet the founder before paying, see a recording of a live session and see the last 30 days of trading stats. The program offers no free trial. How would you handle this? Tell us what you would say, and tell us what you would never say to this person.`,
-    `Picture three prospects on three back-to-back calls: a 62-year-old business owner who answers every question with a long story; a 29-year-old who keeps asking if he will get trade alerts to copy; and a 66-year-old retiree who sold himself on the program before you said a word. How would your approach change for each one? Be specific about pace, questions and how you would close or not close.`,
     `A single mother, 53, has been trading for three years and is consistently losing. When you give the price she says: "That's pretty much all I have left." She has good credit and asks about financing. What would you do next, and why? Explain how you would decide whether this person should join at all.`,
-    `A cautious prospect asks: "What's your success rate? Do you guarantee I'll make my money back?" You have heard other reps answer "85% success rate" and "there is a guarantee." How would you answer, and why? Then tell us how you would use student results like "Peter turned 5,000 into 43,000 in three months" without misleading anyone.`,
     `An experienced trader with a 280,000 account is profitable but gives back gains by overtrading. Twenty minutes in, before your presentation, he says: "I've heard enough. I'm in. What's next?" What do you do with the rest of the call, and why? Tell us what could still go wrong if you get this part wrong.`,
     `A prospect is on a work visa that may not allow business activity. She isn't sure whether active trading counts. Her account is mostly her partner's money, she is down on her trades, and she is keen. She says: "Let's just do it. I'll check the visa thing later." You are behind on your monthly target. Walk us through your reasoning, what you would do on the call, and what you would tell your manager afterwards.`
   ];
@@ -727,7 +720,7 @@ const CONFIG = {
       intro: 'Record one answer per question, in one take, two to four minutes each. Talk us through your thinking, not just the words you would say. There are no trick answers, and "I would not do that" is allowed when you explain why.',
       before:
         '<div class="interview-top">' +
-          '<div class="answer-counter"><p id="answer-count" aria-live="polite"><strong>0 of 12</strong> answers added</p><div class="mini-track" aria-hidden="true"><div class="mini-fill" id="answer-fill"></div></div></div>' +
+          '<div class="answer-counter"><p id="answer-count" aria-live="polite"><strong>0 of 5</strong> answers added</p><div class="mini-track" aria-hidden="true"><div class="mini-fill" id="answer-fill"></div></div></div>' +
           '<div class="howto"><h3>' + ICON.mic + 'How to record</h3><ol>' +
             '<li><span>Open <a href="https://vocaroo.com" target="_blank" rel="noopener noreferrer">vocaroo.com' + ICON.ext + '<span class="sr-only"> (opens in a new tab)</span></a> in a new tab.</span></li>' +
             '<li><span>Press the red record button and answer the question.</span></li>' +
@@ -1003,11 +996,11 @@ const CONFIG = {
     return c;
   }
   function updateAnswerCount() {
-    const c = countValid('q', 12);
+    const c = countValid('q', QUESTIONS.length);
     const el = $('#answer-count');
-    if (el) el.innerHTML = '<strong>' + c + ' of 12</strong> answers added';
+    if (el) el.innerHTML = '<strong>' + c + ' of ' + QUESTIONS.length + '</strong> answers added';
     const fill = $('#answer-fill');
-    if (fill) fill.style.width = (c / 12 * 100) + '%';
+    if (fill) fill.style.width = (c / QUESTIONS.length * 100) + '%';
   }
   function updateCounter(f) {
     const el = $('#count-' + f.id);
@@ -1156,9 +1149,9 @@ const CONFIG = {
     return s;
   }
   function renderReview() {
-    const fathomOk = countValid('fathom', 3), vocaOk = countValid('q', 12);
+    const fathomOk = countValid('fathom', 3), vocaOk = countValid('q', QUESTIONS.length);
     const ready = (ok, total, label) => '<div class="ready-item ' + (ok === total ? 'ok' : 'bad') + '"><span class="dot" aria-hidden="true">' + (ok === total ? ICON.check : ICON.cross) + '</span><span>' + label + ': <strong>' + ok + ' of ' + total + '</strong> valid</span></div>';
-    $('#readiness').innerHTML = ready(fathomOk, 3, 'Fathom recordings') + ready(vocaOk, 12, 'Vocaroo answers');
+    $('#readiness').innerHTML = ready(fathomOk, 3, 'Fathom recordings') + ready(vocaOk, QUESTIONS.length, 'Vocaroo answers');
 
     $('#review').innerHTML = STEPS.slice(0, LAST).map((s, i) => {
       const rows = s.fields.filter(isVisible).map((f) => {
@@ -1326,10 +1319,10 @@ const CONFIG = {
         state.returnToReview = true;
         goTo(i, { focus: false });
         validateStep(i);
-        const fathomOk = countValid('fathom', 3), vocaOk = countValid('q', 12);
+        const fathomOk = countValid('fathom', 3), vocaOk = countValid('q', QUESTIONS.length);
         let why = 'Step ' + (i + 1) + ' (' + esc(STEPS[i].short) + ') is incomplete.';
         if (i === 2) why = 'All 3 Fathom recordings are required. ' + fathomOk + ' of 3 are valid.';
-        if (i === 4) why = 'All 12 Vocaroo answers are required. ' + vocaOk + ' of 12 are added.';
+        if (i === 4) why = 'All ' + QUESTIONS.length + ' Vocaroo answers are required. ' + vocaOk + ' of ' + QUESTIONS.length + ' are added.';
         setAlert(why + ' Fix the highlighted fields, then return to review.');
       } else {
         validateStep(i);
