@@ -704,10 +704,7 @@ const CONFIG = {
         field({ id: 'marketHours', key: 'Can Work US Hours, 9:00 AM to 8:00 PM ET', label: 'Can you work US hours, 9:00 AM to 8:00 PM ET?', type: 'radio', options: opts(['Yes', 'No']) }),
         field({ id: 'marketHoursDetails', key: 'Market Hours Details', label: 'Details', required: false, placeholder: 'Which hours in that window you can cover, and any days you are unavailable' }),
         field({ id: 'startDate', key: 'Earliest Start Date', label: 'Earliest start date', type: 'date' }),
-        { row: [
-          field({ id: 'compStructure', key: 'Expected Compensation Structure', label: 'Expected compensation structure', type: 'select', options: opts(['Commission only', 'Base plus commission', 'Open']) }),
-          field({ id: 'targetEarnings', key: 'Target Monthly Earnings (USD)', label: 'Target monthly earnings', type: 'number', prefix: '$', suffix: 'USD', min: 0, placeholder: '10,000' })
-        ]},
+        field({ id: 'compStructure', key: 'Expected Compensation Structure', label: 'Expected compensation structure', type: 'select', options: opts(['Commission only', 'Base plus commission', 'Open']) }),
         field({ id: 'tradeLevel', key: 'Trades Personally', label: 'Do you trade yourself?', type: 'radio', options: opts(['None', 'Beginner', 'Active']) }),
         field({ id: 'tradeExperience', key: 'Trading Experience', label: 'Your trading experience, in one line', required: false, max: 160, placeholder: 'e.g. Two years swing trading ETFs in a small account' }),
         field({ id: 'whyUs', key: 'Why Trading Education, and Why Us', label: 'Why trading education, and why us?', type: 'textarea', max: 500, rows: 5 }),
