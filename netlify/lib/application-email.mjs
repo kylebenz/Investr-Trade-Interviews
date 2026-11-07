@@ -52,7 +52,7 @@ export function validateSubmission(body) {
   const fathom = all.filter((f) => /^Fathom Deal \d+ URL$/.test(f.label) && RE_FATHOM.test(f.value)).length;
   const vocaroo = all.filter((f) => /^Q\d+ Vocaroo Link$/.test(f.label) && RE_VOCAROO.test(f.value)).length;
   if (fathom < 3) return { error: 'All 3 Fathom recording links are required.' };
-  if (vocaroo < 12) return { error: 'All 12 Vocaroo links are required.' };
+  if (vocaroo < 5) return { error: 'All 5 Vocaroo links are required.' };
 
   return { app: { name, email, submittedAt: new Date(), sections } };
 }
